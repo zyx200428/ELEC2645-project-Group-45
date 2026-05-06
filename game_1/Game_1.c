@@ -295,57 +295,68 @@ static void build_row_string(int row, char *out)
     out[idx] = '\0';
 }
 
-static void draw_status_text(void)
+static void draw_start_screen(void)
+{
+    LCD_Fill_Buffer(0);
+
+    LCD_printString("SNAKE GAME", 60, 35, 1, 2);
+    LCD_printString("Press to Start", 55, 105, 1, 2);
+    LCD_printString("Use joystick to move", 35, 185, 1, 1);
+
+    LCD_Refresh(&cfg0);
+}
+
+static void draw_game_over_screen(void)
 {
     char line[32];
+
+    LCD_Fill_Buffer(0);
+
+    LCD_printString("GAME OVER", 65, 40, 1, 2);
+
+    sprintf(line, "Final Score: %02d", score);
+    LCD_printString(line, 60, 105, 1, 1);
+
+    LCD_printString("Press to restart", 55, 180, 1, 1);
+    LCD_printString("Or return to menu", 45, 200, 1, 1);
+
+    LCD_Refresh(&cfg0);
+}
+
+static void draw_pause_screen(void)
+{
+    LCD_Fill_Buffer(0);
+
+    LCD_printString("PAUSED", 85, 70, 1, 2);
+    LCD_printString("BT2: Resume", 60, 130, 1, 1);
+    LCD_printString("BT3: Return menu", 40, 155, 1, 1);
+
+    LCD_Refresh(&cfg0);
+}
+
+static void draw_game_screen(void)
+{
+    char line[32];
+
+    LCD_Fill_Buffer(0);
 
     sprintf(line, "Score: %d", score);
     LCD_printString(line, 10, 10, 1, 2);
 
-    switch (game_state) {
-        case SNAKE_STATE_START:
-            LCD_printString("BT2: Start", 10, 28, 1, 1);
-            LCD_printString("BT3: Menu", 120, 28, 1, 1);
-            break;
+    LCD_printString("BT2: Pause", 10, 30, 1, 1);
+    LCD_printString("BT3: Menu", 140, 30, 1, 1);
 
-        case SNAKE_STATE_RUNNING:
-            LCD_printString("BT2: Pause", 10, 28, 1, 1);
-            LCD_printString("BT3: Menu", 120, 28, 1, 1);
-            break;
-
-        case SNAKE_STATE_PAUSED:
-            LCD_printString("PAUSED", 95, 28, 1, 1);
-            LCD_printString("BT2: Resume", 10, 42, 1, 1);
-            LCD_printString("BT3: Menu", 120, 42, 1, 1);
-            break;
-
-        case SNAKE_STATE_GAME_OVER:
-            LCD_printString("GAME OVER", 80, 28, 1, 2);
-            LCD_printString("BT2: Restart", 10, 50, 1, 1);
-            LCD_printString("BT3: Menu", 120, 50, 1, 1);
-            break;
-    }
-}
-
-static void snake_render(void)
-{
-    LCD_Fill_Buffer(0);
-
-    LCD_printString("SNAKE", 85, 0, 1, 2);
-    draw_status_text();
-
-    LCD_printString("==================", 20, 65, 1, 1);
+    LCD_printString("==================", 20, 55, 1, 1);
 
     char row_buf[SNAKE_W + 3];
-    int y0 = 80;
+    int y0 = 70;
 
     for (int row = 0; row < SNAKE_H; row++) {
         build_row_string(row, row_buf);
         LCD_printString(row_buf, 20, y0 + row * 10, 1, 1);
     }
 
-    LCD_printString("O=head o=body *=food X=wall", 10, 225, 1, 1);
-
+    LCD_printString("O=head o=body *=food X=wall", 8, 220, 1, 1);
     LCD_Refresh(&cfg0);
 }
 
@@ -376,7 +387,16 @@ MenuState Game1_Run(void)
         }
 
         snake_update_logic();
-        snake_render();
+
+        if (game_state == SNAKE_STATE_START) {
+            draw_start_screen();
+        } else if (game_state == SNAKE_STATE_RUNNING) {
+            draw_game_screen();
+        } else if (game_state == SNAKE_STATE_PAUSED) {
+            draw_pause_screen();
+        } else if (game_state == SNAKE_STATE_GAME_OVER) {
+            draw_game_over_screen();
+        }
 
         uint32_t frame_time = HAL_GetTick() - frame_start;
         if (frame_time < FRAME_TIME_MS) {
