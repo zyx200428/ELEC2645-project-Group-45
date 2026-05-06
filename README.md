@@ -1,87 +1,58 @@
-# Unit 4.1 Menu Template
+# ELEC2645 Project – Snake Game
 
-A collaborative game development framework for your Unit 4 Group Project, demonstrating how multiple students can implement their own games within a shared menu system and game loop architecture.
+This project was completed for the ELEC2645 coursework. I used the provided menu template as the starting point and then developed my own Snake game based on it.
 
-## Overview
+The project was tested on real hardware using the STM32 Nucleo-L476RG board, together with an LCD display, joystick, button, and buzzer.
 
-This project provides:
-- **Centralized Menu System**: Navigate between 3 independent games
-- **Simple Game Loop**: INPUT → UPDATE → RENDER pattern
-- **Shared Resources**: LCD display, joystick input, buzzer, PWM LED
-- **Student Friendly**: Each student works in their own game folder
-- **No Merge Conflicts**: Shared code stays in `shared/`, each game in its own folder
+## Project Overview
 
-## Project Structure
+The main part of this project is a Snake game running on the STM32 board. The player controls the snake using the joystick, collects food to increase the score, and avoids obstacles and collisions.
 
-```
-MenuTest/
-├── Core/              # STM32 auto-generated files
-├── Drivers/           # STM32 HAL drivers
-├── shared/            # Shared menu system & input handling
-│   ├── Menu.h/c
-│   └── InputHandler.h/c
-├── game_1/            # Student 1's game
-│   └── Game_1.c
-├── game_2/            # Student 2's game
-│   └── Game_2.c
-├── game_3/            # Student 3's game
-│   └── Game_3.c
-├── Joystick/          # Hardware drivers
-├── PWM/
-├── Buzzer/
-└── CMakeLists.txt
-```
+The project also includes a menu system, allowing the player to enter the game from the main menu and interact with the game through hardware controls.
 
-## Quick Start
+## Main Features
 
-See [README_STUDENTS.md](README_STUDENTS.md) for detailed student guide.
+- LCD menu display
+- Snake game implemented on STM32 hardware
+- Joystick control
+- Score system
+- Snake growth after collecting food
+- Fixed obstacles
+- Game over state
+- Buzzer feedback
+- Hardware testing and successful flashing
 
-## Architecture
+## Hardware Used
 
-### Main Game Loop (main.c)
-
-```c
-while(1) {
-    Input_Read();              // Read button and joystick
-    
-    switch(current_state) {    // UPDATE
-        case MENU: Menu_Update(); break;
-        case GAME_1: Game1_Update(); break;
-        case GAME_2: Game2_Update(); break;
-        case GAME_3: Game3_Update(); break;
-    }
-    
-    switch(current_state) {    // RENDER
-        case MENU: Menu_Render(); break;
-        case GAME_1: Game1_Render(); break;
-        case GAME_2: Game2_Render(); break;
-        case GAME_3: Game3_Render(); break;
-    }
-}
-```
-
-### Each Game Implements Three Functions
-
-```c
-void GameX_Init(void);      // Called once when game is selected from menu
-void GameX_Update(void);    // Called every frame (~30 FPS)
-void GameX_Render(void);    // Called every frame (after Update)
-```
+- STM32 Nucleo-L476RG
+- 1.54" SPI LCD
+- Joystick module
+- Button
+- Buzzer
+- Breadboard and jumper wires
 
 ## Controls
 
-- **Joystick UP/DOWN**: Navigate menu
-- **BT2 Button**: Available for custom game use
-- **BT3 Button**: Select menu option or custom game use
+- **Joystick**: move through the menu and control snake direction
+- **Joystick press / button**: used for selection depending on the hardware setup
+- **Button**: start / pause / resume / restart
 
-## Hardware Features
+## Project Structure
 
-- **STM32L476 Microcontroller**
-- **ST7789V2 LCD Display** (240×320)
-- **Joystick Input** with 8-directional output
-- **PWM LED** for visual effects
-- **Buzzer** for sound effects
-- **Timers**: TIM6 (100Hz) and TIM7 (1Hz) available for game timing
+- `game_1/` – Snake game files
+- `game_2/` – placeholder / additional game area
+- `shared/` – shared menu and input handling files
+- `Joystick/` – joystick driver files
+- `Buzzer/` – buzzer driver files
+- LCD driver files
+- `.ioc` / `CMakeLists.txt` – project configuration files
 
-See driver folders (Joystick/, PWM/, Buzzer/) for API documentation.
-See [TIMER_USAGE_GUIDE.md](TIMER_USAGE_GUIDE.md) for timer examples.
+## Development Summary
+
+I first worked on understanding the menu template and project structure. After that, I replaced the original game file with my own Snake game implementation.
+
+I then tested the code on hardware. The main progress included successful project build, code flashing, LCD menu display, and joystick input testing on the STM32 board. This confirmed that the project was working on real hardware rather than only in software.
+
+## Note
+
+This project was developed based on the ELEC2645 template provided for the coursework. The Snake game implementation, integration, and testing were completed as my own project work.
